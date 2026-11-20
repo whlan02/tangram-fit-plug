@@ -5,7 +5,7 @@ A tiny open-source app that reads health data on your phone and uploads it to **
 ## Status
 
 - **iOS (HealthKit):** reading is implemented.
-- **Android (Health Connect):** not implemented yet.
+- **Android (Health Connect):** reading is implemented but not yet tested on a device.
 
 ## Use
 
