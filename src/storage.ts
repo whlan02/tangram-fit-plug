@@ -15,7 +15,11 @@ export async function loadPairing(): Promise<Pairing | null> {
 }
 
 export const savePairing = (p: Pairing) => SecureStore.setItemAsync(KEY, JSON.stringify(p));
-export const clearPairing = () => SecureStore.deleteItemAsync(KEY);
+/** Unpairing also forgets the last sync time, so pairing with another server starts with a full backfill. */
+export async function clearPairing(): Promise<void> {
+  await SecureStore.deleteItemAsync(KEY);
+  await SecureStore.deleteItemAsync(LAST);
+}
 
 /** ISO timestamp of the last successful upload, or null. */
 export const loadLastSync = () => SecureStore.getItemAsync(LAST);

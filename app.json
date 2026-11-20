@@ -1,15 +1,21 @@
 {
   "expo": {
-    "name": "tangram-fit-plug",
+    "name": "Tangram Fit Plug",
     "slug": "tangram-fit-plug",
+    "scheme": "tangramfitplug",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tangramfit.plug",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.tangramfit.plug",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -24,8 +30,16 @@
     "plugins": [
       "expo-secure-store",
       "expo-build-properties",
-      "@kingstinct/react-native-healthkit",
-      "react-native-health-connect"
+      "react-native-health-connect",
+      "expo-dev-client",
+      [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": "Tangram Fit Plug 读取你的健康数据（步数、睡眠、心率、体重等），上传到你自己的服务器。",
+          "NSHealthUpdateUsageDescription": "Tangram Fit Plug 不会写入健康数据。",
+          "background": false
+        }
+      ]
     ]
   }
 }
