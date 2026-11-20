@@ -3,7 +3,7 @@ import * as Linking from "expo-linking";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { t } from "./src/i18n";
+import { t, type LocalePref } from "./src/i18n";
 import reader from "./src/health/reader";
 import { usePairing } from "./src/state/usePairing";
 import { applyStoredLocale, useSettings } from "./src/state/useSettings";
@@ -31,7 +31,7 @@ interface Boot {
   onboarded: boolean;
   lastSync: string | null;
   lastResult: LastResult | null;
-  localePref: "auto" | "zh" | "en";
+  localePref: LocalePref;
   autoSync: boolean;
   healthAccessAsked: boolean;
 }

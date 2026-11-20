@@ -1,4 +1,5 @@
 import * as SecureStore from "expo-secure-store";
+import { isLocalePref, type LocalePref } from "./i18n";
 
 export interface Pairing {
   serverUrl: string;
@@ -31,14 +32,15 @@ const LAST_RESULT = "last_result";
 const AUTO_SYNC = "auto_sync";
 const HEALTH_ASKED = "health_access_asked";
 
-export type LocalePrefStored = "auto" | "zh" | "en";
+export type LocalePrefStored = LocalePref;
 
-export async function loadLocalePref(): Promise<LocalePrefStored> {
+export async function loadLocalePref(): Promise<LocalePref> {
   const raw = await SecureStore.getItemAsync(LOCALE);
-  if (raw === "zh" || raw === "en" || raw === "auto") return raw;
+  if (raw === "zh") return "zh-Hans";
+  if (isLocalePref(raw)) return raw;
   return "auto";
 }
-export const saveLocalePref = (pref: LocalePrefStored) => SecureStore.setItemAsync(LOCALE, pref);
+export const saveLocalePref = (pref: LocalePref) => SecureStore.setItemAsync(LOCALE, pref);
 
 export async function loadOnboarded(): Promise<boolean> {
   return (await SecureStore.getItemAsync(ONBOARDED)) === "1";

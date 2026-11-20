@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-import { Pressable, type AccessibilityRole, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, type AccessibilityRole, type AccessibilityState, type StyleProp, type ViewStyle } from "react-native";
 import { minTap } from "../theme";
 
 interface Props {
@@ -7,6 +7,7 @@ interface Props {
   disabled?: boolean;
   accessibilityLabel: string;
   accessibilityRole?: AccessibilityRole;
+  accessibilityState?: AccessibilityState;
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
 }
@@ -16,6 +17,7 @@ export function PressableScale({
   disabled,
   accessibilityLabel,
   accessibilityRole = "button",
+  accessibilityState,
   children,
   style,
 }: Props) {
@@ -25,7 +27,7 @@ export function PressableScale({
       disabled={disabled}
       accessibilityRole={accessibilityRole}
       accessibilityLabel={accessibilityLabel}
-      accessibilityState={{ disabled: !!disabled }}
+      accessibilityState={{ disabled: !!disabled, ...accessibilityState }}
       style={({ pressed }) => [
         { minHeight: minTap, minWidth: minTap, opacity: disabled ? 0.5 : pressed ? 0.72 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] },
         style,

@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { t } from "../i18n";
-import { minTap, space, type, useTheme } from "../theme";
+import { minTap, space, useTheme } from "../theme";
 import { PressableScale } from "./PressableScale";
 
 export type AppTab = "sync" | "settings";
@@ -52,7 +52,19 @@ function TabItem({
       accessibilityLabel={label}
       style={{ flex: 1, alignItems: "center", justifyContent: "center", minHeight: minTap, paddingVertical: space.sm }}
     >
-      <Text style={{ fontSize: type.label, fontWeight: selected ? "700" : "500", color: selected ? theme.primary : theme.muted }}>
+      <Text
+        numberOfLines={1}
+        allowFontScaling={false}
+        adjustsFontSizeToFit
+        minimumFontScale={0.7}
+        style={{
+          fontSize: 11,
+          fontWeight: selected ? "700" : "500",
+          color: selected ? theme.primary : theme.muted,
+          width: "100%",
+          textAlign: "center",
+        }}
+      >
         {label}
       </Text>
     </PressableScale>

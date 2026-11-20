@@ -1,23 +1,24 @@
-import { en } from "./en";
-import { zh } from "./zh";
+import { catalogs } from "./catalogs";
+import { en, type MsgKey } from "./catalogs/en";
+import type { Locale, LocalePref } from "./locales";
+import { resolveLocale } from "./resolve";
 
-export type MessageKey = keyof typeof zh;
-export type Locale = "zh" | "en";
-export type LocalePref = "auto" | Locale;
+export type { Locale, LocalePref } from "./locales";
+export { LOCALES, isLocale, isLocalePref } from "./locales";
+export { resolveLocale } from "./resolve";
+export type { Catalog } from "./catalogs";
+export type MessageKey = MsgKey;
 export type MessageParams = Record<string, string | number>;
-
-const catalogs: Record<Locale, Record<MessageKey, string>> = { zh, en };
 
 let pref: LocalePref = "auto";
 let deviceTag = "en";
 
-export function resolveLocale(localePref: LocalePref, languageTag: string): Locale {
-  if (localePref === "zh" || localePref === "en") return localePref;
-  return languageTag.toLowerCase().startsWith("zh") ? "zh" : "en";
-}
-
 export function currentLocale(): Locale {
   return resolveLocale(pref, deviceTag);
+}
+
+export function getPreference(): LocalePref {
+  return pref;
 }
 
 export function setLocale(next: LocalePref, languageTag?: string): Locale {
@@ -33,10 +34,14 @@ export function interpolate(template: string, params?: MessageParams): string {
   );
 }
 
+export function lookup(locale: Locale, key: MessageKey): string {
+  return catalogs[locale][key] ?? en[key] ?? key;
+}
+
 export function t(key: MessageKey, params?: MessageParams): string {
-  return interpolate(catalogs[currentLocale()][key], params);
+  return interpolate(lookup(currentLocale(), key), params);
 }
 
 export function messageKeys(): MessageKey[] {
-  return Object.keys(zh) as MessageKey[];
+  return Object.keys(en) as MessageKey[];
 }

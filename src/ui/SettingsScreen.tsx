@@ -1,8 +1,8 @@
 import { nativeApplicationVersion } from "expo-application";
 import * as Linking from "expo-linking";
-import { type ReactNode } from "react";
-import { Platform, ScrollView, Switch, Text, View } from "react-native";
-import { t, type LocalePref } from "../i18n";
+import { type ReactNode, useState } from "react";
+import { Modal, Platform, ScrollView, Switch, Text, View } from "react-native";
+import { LOCALES, t, type LocalePref } from "../i18n";
 import { space, type, useTheme } from "../theme";
 import { PressableScale } from "./PressableScale";
 import { Screen } from "./Screen";
@@ -42,9 +42,7 @@ export function SettingsScreen(props: Props) {
       <ScrollView contentContainerStyle={{ gap: space.xl, paddingBottom: space.xxl }}>
         <Text style={{ fontSize: type.title, fontWeight: "700", color: theme.ink }}>{t("settings.title")}</Text>
         <Section title={t("settings.language")}>
-          <Choice label={t("settings.languageAuto")} selected={props.localePref === "auto"} onPress={() => props.onLocalePref("auto")} />
-          <Choice label={t("settings.languageZh")} selected={props.localePref === "zh"} onPress={() => props.onLocalePref("zh")} />
-          <Choice label={t("settings.languageEn")} selected={props.localePref === "en"} onPress={() => props.onLocalePref("en")} />
+          <LanguagePicker pref={props.localePref} onPref={props.onLocalePref} />
         </Section>
         <Section title={t("settings.autoSync")}>
           <Switch
@@ -90,17 +88,65 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-function Choice({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+function LanguagePicker({ pref, onPref }: { pref: LocalePref; onPref: (pref: LocalePref) => void }) {
+  const theme = useTheme();
+  const [open, setOpen] = useState(false);
+  const current =
+    pref === "auto" ? t("settings.languageAuto") : (LOCALES.find((item) => item.code === pref)?.name ?? pref);
+  return (
+    <View>
+      <PressableScale
+        onPress={() => setOpen(true)}
+        accessibilityRole="button"
+        accessibilityLabel={`${t("settings.language")}: ${current}`}
+        style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}
+      >
+        <Text style={{ fontSize: type.body, color: theme.ink }}>{current}</Text>
+      </PressableScale>
+      <Modal visible={open} animationType="slide" onRequestClose={() => setOpen(false)}>
+        <View style={{ flex: 1, backgroundColor: theme.bg, paddingTop: space.xxl }}>
+          <Text style={{ fontSize: type.heading, fontWeight: "600", color: theme.ink, paddingHorizontal: space.lg, paddingBottom: space.md }}>
+            {t("settings.language")}
+          </Text>
+          <ScrollView contentContainerStyle={{ paddingHorizontal: space.lg, paddingBottom: space.xxl }}>
+            <LangRow
+              label={t("settings.languageAuto")}
+              selected={pref === "auto"}
+              onPress={() => {
+                onPref("auto");
+                setOpen(false);
+              }}
+            />
+            {LOCALES.map((item) => (
+              <LangRow
+                key={item.code}
+                label={item.name}
+                selected={pref === item.code}
+                onPress={() => {
+                  onPref(item.code);
+                  setOpen(false);
+                }}
+              />
+            ))}
+          </ScrollView>
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+function LangRow({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
   const theme = useTheme();
   return (
     <PressableScale
       onPress={onPress}
-      accessibilityRole="button"
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
       accessibilityLabel={label}
       style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}
     >
       <Text style={{ fontSize: type.body, color: theme.ink }}>{label}</Text>
-      <Text style={{ color: theme.primary, fontSize: type.body }}>{selected ? "●" : "○"}</Text>
+      <Text style={{ color: theme.primary, fontSize: type.body }}>{selected ? "✓" : ""}</Text>
     </PressableScale>
   );
 }

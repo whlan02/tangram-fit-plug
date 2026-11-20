@@ -2,7 +2,7 @@
 
 A small open-source app that reads health data on your phone and uploads it to **your** server. It is the companion plug for the Tangram Fit web app: it posts to the web app’s `POST /api/ingest` endpoint (format: `docs/ingest.md` in the web repository).
 
-The app follows the web product’s pastel look, supports light and dark mode, Chinese and English (or the system language), and never sends data through a third party.
+The app follows the web product’s pastel look, supports light and dark mode, and 38 languages (English and Simplified Chinese ship complete; others fall back to English until translated, or follow the system language). It never sends data through a third party.
 
 ## Status
 
