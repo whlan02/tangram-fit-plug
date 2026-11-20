@@ -24,3 +24,52 @@ export async function clearPairing(): Promise<void> {
 /** ISO timestamp of the last successful upload, or null. */
 export const loadLastSync = () => SecureStore.getItemAsync(LAST);
 export const saveLastSync = (iso: string) => SecureStore.setItemAsync(LAST, iso);
+
+const LOCALE = "locale_pref";
+const ONBOARDED = "onboarded";
+const LAST_RESULT = "last_result";
+const AUTO_SYNC = "auto_sync";
+const HEALTH_ASKED = "health_access_asked";
+
+export type LocalePrefStored = "auto" | "zh" | "en";
+
+export async function loadLocalePref(): Promise<LocalePrefStored> {
+  const raw = await SecureStore.getItemAsync(LOCALE);
+  if (raw === "zh" || raw === "en" || raw === "auto") return raw;
+  return "auto";
+}
+export const saveLocalePref = (pref: LocalePrefStored) => SecureStore.setItemAsync(LOCALE, pref);
+
+export async function loadOnboarded(): Promise<boolean> {
+  return (await SecureStore.getItemAsync(ONBOARDED)) === "1";
+}
+export const saveOnboarded = () => SecureStore.setItemAsync(ONBOARDED, "1");
+
+export interface LastResult {
+  days: number;
+  records: number;
+  accepted: number;
+  rejected: { index: number; error: string }[];
+  ignored_fields: string[];
+}
+
+export async function loadLastResult(): Promise<LastResult | null> {
+  const raw = await SecureStore.getItemAsync(LAST_RESULT);
+  if (!raw) return null;
+  try { return JSON.parse(raw) as LastResult; } catch { return null; }
+}
+export const saveLastResult = (result: LastResult) =>
+  SecureStore.setItemAsync(LAST_RESULT, JSON.stringify(result));
+export const clearLastResult = () => SecureStore.deleteItemAsync(LAST_RESULT);
+
+/** Missing key means on: auto-sync is the default. */
+export async function loadAutoSync(): Promise<boolean> {
+  const raw = await SecureStore.getItemAsync(AUTO_SYNC);
+  return raw !== "0";
+}
+export const saveAutoSync = (on: boolean) => SecureStore.setItemAsync(AUTO_SYNC, on ? "1" : "0");
+
+export async function loadHealthAccessAsked(): Promise<boolean> {
+  return (await SecureStore.getItemAsync(HEALTH_ASKED)) === "1";
+}
+export const saveHealthAccessAsked = () => SecureStore.setItemAsync(HEALTH_ASKED, "1");

@@ -1,6 +1,8 @@
 # Tangram Fit Plug
 
-A tiny open-source app that reads health data on your phone and uploads it to **your** server. It is the companion plug for the Tangram Fit web app: it posts to the web app’s `POST /api/ingest` endpoint (format: `docs/ingest.md` in the web repository).
+A small open-source app that reads health data on your phone and uploads it to **your** server. It is the companion plug for the Tangram Fit web app: it posts to the web app’s `POST /api/ingest` endpoint (format: `docs/ingest.md` in the web repository).
+
+The app follows the web product’s pastel look, supports light and dark mode, Chinese and English (or the system language), and never sends data through a third party.
 
 ## Status
 
@@ -9,7 +11,7 @@ A tiny open-source app that reads health data on your phone and uploads it to **
 
 ## Use
 
-1. On your own server, create a token (shown only once):
+1. On your own server, create a token (shown only once). Use `healthkit` on iPhone and `health-connect` on Android:
 
    ```bash
    node scripts/db.mjs ingest-token create --source healthkit
@@ -22,7 +24,22 @@ A tiny open-source app that reads health data on your phone and uploads it to **
    npx eas build --profile development --platform ios
    ```
 
-3. Open the app, enter your server URL and token, grant health access, then tap sync.
+3. Open the app, go through the short intro, enter your server URL and token (or open a pairing link), grant health access, then tap **Sync now**.
+
+### Pairing links
+
+The app accepts:
+
+```
+tangramfitplug://pair?url=<encoded-server-url>&token=<token>
+```
+
+The form is filled in for you. Nothing is saved until you tap **Test connection and save**, which checks the token against `GET /api/ingest` first.
+
+### After pairing
+
+- Sync tab: last sync time, results, **Sync now**, grant access, and a 90-day backfill. Pull to refresh. Auto-sync (on by default) runs when the app opens or returns to the foreground if the last sync is more than an hour ago.
+- Settings: language, auto-sync, what is read (read-only), privacy notes, version, and unpair.
 
 ## Develop
 
@@ -34,7 +51,7 @@ npm run typecheck
 
 ## Privacy
 
-Read-only: the app does not write health data. Uploads go only to the server URL you enter. The token is stored in the system secure store.
+Read-only: the app does not write health data. Uploads go only to the server URL you enter. The token is stored in the system secure store. There is no analytics, advertising, or third-party telemetry.
 
 ## License
 

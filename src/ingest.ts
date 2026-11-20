@@ -36,6 +36,45 @@ export interface UploadOptions {
   sleepFn?: (ms: number) => Promise<void>;
 }
 
+export interface TokenInfo {
+  source: string;
+  label: string | null;
+}
+
+/** GET /api/ingest with the bearer token. Confirms the token before pairing is saved. */
+export async function checkToken(
+  serverUrl: string,
+  token: string,
+  fetchFn?: FetchFn,
+): Promise<TokenInfo> {
+  const base = normalizeServerUrl(serverUrl);
+  const doFetch = fetchFn ?? fetch;
+  let res: Response;
+  try {
+    res = await doFetch(`${base}/api/ingest`, {
+      method: "GET",
+      headers: { authorization: `Bearer ${token}` },
+    });
+  } catch {
+    throw new UploadError("连不上服务器，请检查网络和地址");
+  }
+  if (res.status === 401) throw new AuthError("令牌无效或已吊销");
+  if (res.status >= 500) throw new UploadError("连不上服务器，请检查网络和地址");
+  if (res.status !== 200) {
+    let json: { error?: string } | null = null;
+    try { json = await res.json() as { error?: string }; } catch { /* status text is enough */ }
+    throw new UploadError(json?.error ?? `服务器返回 ${res.status}`);
+  }
+  let json: { source?: string; label?: string | null } | null = null;
+  try { json = await res.json() as { source?: string; label?: string | null }; } catch {
+    throw new UploadError("服务器返回无法解析");
+  }
+  if (typeof json?.source !== "string" || !json.source) {
+    throw new UploadError("服务器返回无法解析");
+  }
+  return { source: json.source, label: json.label ?? null };
+}
+
 /** Upload in batches of at most 100 days. Re-sending the same days is safe: the server merges by (date, source). */
 export async function uploadRecords(opts: UploadOptions): Promise<UploadResult> {
   const base = normalizeServerUrl(opts.serverUrl);
