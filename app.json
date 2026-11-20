@@ -62,7 +62,8 @@
           "NSHealthUpdateUsageDescription": "Tangram Fit Plug 不会写入健康数据。",
           "background": false
         }
-      ]
+      ],
+      "expo-localization"
     ]
   }
 }
