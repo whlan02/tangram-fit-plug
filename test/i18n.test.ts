@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { en } from "../src/i18n/catalogs/en";
 import { zhHans } from "../src/i18n/catalogs/zh-Hans";
+import { de } from "../src/i18n/catalogs/de";
+import { fr } from "../src/i18n/catalogs/fr";
 import { errorToText } from "../src/errors";
 import { AuthError, UploadError } from "../src/ingest";
 import { interpolate, setLocale, t } from "../src/i18n";
@@ -14,15 +16,15 @@ describe("interpolate", () => {
 });
 
 describe("t / setLocale", () => {
-  it("缺键回退英文，完整目录用当前语言", () => {
+  it("完整目录用当前语言，自动模式跟随系统语言", () => {
     setLocale("de", "de-DE");
-    assert.equal(t("home.syncNow"), en["home.syncNow"]);
+    assert.equal(t("home.syncNow"), de["home.syncNow"]);
     setLocale("zh-Hans", "en-US");
     assert.equal(t("home.syncNow"), zhHans["home.syncNow"]);
     setLocale("en", "zh-CN");
     assert.equal(t("pair.tokenRequired"), en["pair.tokenRequired"]);
     setLocale("auto", "fr-FR");
-    assert.equal(t("home.syncNow"), en["home.syncNow"]);
+    assert.equal(t("home.syncNow"), fr["home.syncNow"]);
     setLocale("auto", "zh-CN");
     assert.equal(t("home.syncNow"), zhHans["home.syncNow"]);
   });
